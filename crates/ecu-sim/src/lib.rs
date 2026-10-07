@@ -8,9 +8,44 @@ use std::sync::mpsc::{channel, Receiver, RecvTimeoutError, Sender};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
 
-use collector::{BusError, CanBus, CanFrame};
+use collector::{BusError, CanBus, CanFrame, SampleBatch, Uplink, UplinkError};
 
 const UDS_READ_BY_ID: u8 = 0x22;
+
+/// Blocking HTTP `Uplink` that POSTs batches to `<base_url>/ingest`.
+pub struct ReqwestUplink {
+    client: reqwest::blocking::Client,
+    base_url: String,
+    device_key: String,
+}
+
+impl ReqwestUplink {
+    pub fn new(base_url: impl Into<String>, device_key: impl Into<String>) -> Self {
+        Self {
+            client: reqwest::blocking::Client::new(),
+            base_url: base_url.into(),
+            device_key: device_key.into(),
+        }
+    }
+}
+
+impl Uplink for ReqwestUplink {
+    fn push(&mut self, batch: &SampleBatch) -> Result<(), UplinkError> {
+        let url = format!("{}/ingest", self.base_url.trim_end_matches('/'));
+        let resp = self
+            .client
+            .post(url)
+            .header("x-device-key", &self.device_key)
+            .json(batch)
+            .send()
+            .map_err(|_| UplinkError::Unreachable)?;
+        if resp.status().is_success() {
+            Ok(())
+        } else {
+            Err(UplinkError::Rejected(format!("HTTP {}", resp.status().as_u16())))
+        }
+    }
+}
 
 /// The collector-facing half of an in-memory CAN link.
 pub struct MemCanBus {

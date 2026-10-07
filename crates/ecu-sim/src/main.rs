@@ -4,8 +4,8 @@
 use std::thread;
 use std::time::Duration;
 
-use collector::{Collector, LaneScheduler, MemStore, SampleStore, Uplink, UplinkError};
-use ecu_sim::{pair, MebEcuSim};
+use collector::{Collector, LaneScheduler, MemStore, SampleStore, Uplink};
+use ecu_sim::{pair, MebEcuSim, ReqwestUplink};
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -28,9 +28,21 @@ fn main() {
     print_table(&col);
 
     if let Some(ref url) = uplink_url {
-        match ReqwestUplink::new(url.clone(), device_key).push_all(&mut col) {
-            Ok(n) => println!("\nuplink: pushed {n} samples to {url}"),
-            Err(e) => println!("\nuplink: failed: {e:?}"),
+        let mut up = ReqwestUplink::new(url.clone(), device_key);
+        let mut pushed = 0usize;
+        let mut err = None;
+        while let Some(batch) = col.take_batch(256) {
+            match up.push(&batch) {
+                Ok(()) => pushed += batch.samples.len(),
+                Err(e) => {
+                    err = Some(e);
+                    break;
+                }
+            }
+        }
+        match err {
+            None => println!("\nuplink: pushed {pushed} samples to {url}"),
+            Some(e) => println!("\nuplink: pushed {pushed} then failed: {e:?}"),
         }
     } else {
         println!(
@@ -70,35 +82,4 @@ fn print_table(col: &Collector<ecu_sim::MemCanBus, MemStore>) {
 
 fn flag(args: &[String], name: &str) -> Option<String> {
     args.iter().position(|a| a == name).and_then(|i| args.get(i + 1).cloned())
-}
-
-/// Minimal blocking HTTP uplink using the std library only (no reqwest in this
-/// scaffold); real reqwest-based client lands in task T5.
-struct ReqwestUplink {
-    url: String,
-    device_key: String,
-}
-
-impl ReqwestUplink {
-    fn new(url: String, device_key: String) -> Self {
-        Self { url, device_key }
-    }
-
-    fn push_all(&mut self, col: &mut Collector<ecu_sim::MemCanBus, MemStore>) -> Result<usize, UplinkError> {
-        let mut total = 0;
-        while let Some(batch) = col.take_batch(256) {
-            self.push(&batch)?;
-            total += batch.samples.len();
-        }
-        Ok(total)
-    }
-}
-
-impl Uplink for ReqwestUplink {
-    fn push(&mut self, _batch: &collector::SampleBatch) -> Result<(), UplinkError> {
-        // Placeholder until T5 wires a real HTTP client; signals the URL/key are
-        // plumbed through so the CLI contract is stable.
-        let _ = (&self.url, &self.device_key);
-        Err(UplinkError::Unreachable)
-    }
 }
