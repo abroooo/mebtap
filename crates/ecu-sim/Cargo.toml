@@ -1,0 +1,16 @@
+[package]
+name = "ecu-sim"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "ecu-sim"
+path = "src/main.rs"
+
+[lib]
+name = "ecu_sim"
+path = "src/lib.rs"
+
+[dependencies]
+meb-proto = { path = "../meb-proto" }
+collector = { path = "../collector" }

@@ -1,0 +1,15 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: ev-tracker-tsdb
+    environment:
+      POSTGRES_USER: ev
+      POSTGRES_PASSWORD: ev
+      POSTGRES_DB: ev_tracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - ev-tsdb-data:/var/lib/postgresql/data
+
+volumes:
+  ev-tsdb-data:

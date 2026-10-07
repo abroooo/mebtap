@@ -1,0 +1,8 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/meb-proto",
+    "crates/collector",
+    "crates/ecu-sim",
+    "backend",
+]
