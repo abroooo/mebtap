@@ -6,3 +6,6 @@ members = [
     "crates/ecu-sim",
     "backend",
 ]
+exclude = [
+    "firmware",
+]
