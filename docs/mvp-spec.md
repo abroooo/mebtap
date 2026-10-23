@@ -41,8 +41,9 @@ validated signal catalogue + timing data.
 | Multimeter | verify pin 16 power-off behavior |
 | microSD (optional) | only if raw capture needs offloading |
 
-Pins (per shield): CAN Rx = GPIO4, Tx = GPIO5. OBD: pin6 CAN-H, pin14 CAN-L,
-pin16 power, pin4 GND.
+Pins (per shield, **v1.3+**): CAN Rx = GPIO4, Tx = GPIO5 (v1.2 and earlier swap
+these). OBD: pin6 CAN-H, pin14 CAN-L, pin16 power, pin4 GND. Shield revision +
+MrDIY ESP32RET firmware caveat: see `docs/meb-can-pids.md` → "Shield / firmware".
 
 ## Bus / Protocol Facts (established)
 

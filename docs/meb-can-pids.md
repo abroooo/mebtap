@@ -15,6 +15,32 @@ your own SavvyCAN captures — byte scaling can vary by model year.
 - Multi-frame (ISO-TP) replies need flow-control. Known MEB multi-frame
   response headers that need FC handling: `5C8 / 5E0 / 5F0`.
 
+## Shield / firmware (MrDIY ESP32 CAN shield)
+
+The MrDIY shield needs the **MrDIY build** of SavvyCAN-ESP32RET
+(<https://firmota.com/apps/savvycan-esp32ret>), *not* stock esp32RET. The only
+functional difference is the CAN Tx/Rx GPIO assignment, and it depends on the
+**shield hardware revision** — Rx/Tx are swapped between v1.2 and v1.3.
+
+Arduino-ESP32-CAN API is `CAN0.setCANPins(rxPin, txPin)` (Rx first, Tx second):
+
+| Shield rev | Rx | Tx | `setCANPins(...)` |
+|---|---|---|---|
+| **v1.3 and later** | **GPIO4** | **GPIO5** | `setCANPins(GPIO_NUM_4, GPIO_NUM_5)` |
+| v1.2 and earlier | GPIO5 | GPIO4 | `setCANPins(GPIO_NUM_5, GPIO_NUM_4)` |
+
+Other shield pins (from MrDIY `canabus` examples):
+- Status LED: `GPIO26`
+- Supply voltage divider: `GPIO32` (v1.1+ only; jumper must be soldered; **max
+  15 V input**; absent/non-functional on v1.0).
+
+**Our firmware (`firmware/` `TwaiCanBus`) is wired Rx=GPIO4 / Tx=GPIO5 — correct
+for shield v1.3+ only.** Confirm the shield revision when hardware arrives; if
+it is v1.2 or older, swap to Rx=GPIO5 / Tx=GPIO4 or CAN init will fail.
+
+Refs: `canabus` commit `bcdd3ec` (<https://gitlab.com/MrDIYca/canabus>) — set the
+v1.3+ pins as the default across ESP32RET.ino + shield examples + gateway.ino.
+
 ## ECU headers
 
 | Header | ECU | Addressing |
