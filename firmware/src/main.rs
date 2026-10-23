@@ -52,6 +52,9 @@ fn main() -> anyhow::Result<()> {
     let store = FlashStore::mount("/storage/pending.ndjson")?;
 
     // TWAI on GPIO4 (Rx) / GPIO5 (Tx) @ 500 kbit/s, listen-only until polling.
+    // BENCH: pins are for MrDIY shield v1.3+. Confirm the shield revision — if
+    // v1.2 or earlier, Rx/Tx are swapped: pass gpio4 as Tx, gpio5 as Rx, or CAN
+    // init fails. See docs/meb-can-pids.md -> "Shield / firmware".
     let bus = TwaiCanBus::new(
         peripherals.can,
         peripherals.pins.gpio5, // Tx
