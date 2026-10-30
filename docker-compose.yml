@@ -7,9 +7,21 @@ services:
       POSTGRES_PASSWORD: ev
       POSTGRES_DB: ev_tracker
     ports:
-      - "5432:5432"
+      # host 5433 -> container 5432 (host 5432 is often taken by another local pg)
+      - "5433:5432"
     volumes:
       - ev-tsdb-data:/var/lib/postgresql/data
+
+  # web DB explorer: http://localhost:8085 (connects over the compose network)
+  pgweb:
+    image: sosedoff/pgweb
+    container_name: ev-tracker-pgweb
+    depends_on:
+      - timescaledb
+    environment:
+      PGWEB_DATABASE_URL: postgres://ev:ev@timescaledb:5432/ev_tracker?sslmode=disable
+    ports:
+      - "8085:8081"
 
 volumes:
   ev-tsdb-data:

@@ -70,10 +70,11 @@ by path dependency: same logic, different concrete drivers.
 cargo run -p ecu-sim
 
 # Full host stack, end to end: sim → backend → query.
-docker-compose up -d                                          # TimescaleDB
-psql postgres://ev:ev@localhost:5432/ev_tracker \
-  -f backend/migrations/0001_init.sql                         # schema
-DEVICE_KEY=dev cargo run -p backend &                         # API on :3000
+docker-compose up -d                                          # TimescaleDB, host :5433
+cat backend/migrations/*.sql | docker-compose exec -T timescaledb \
+  psql -U ev -d ev_tracker                                    # schema (no local psql)
+DATABASE_URL=postgres://ev:ev@localhost:5433/ev_tracker \
+  DEVICE_KEY=dev cargo run -p backend &                       # API on :3000
 cargo run -p ecu-sim -- --uplink http://localhost:3000 --device-key dev
 curl 'http://localhost:3000/latest'
 ```
@@ -92,7 +93,8 @@ cargo test --workspace     # meb-proto + collector + ecu-sim + backend
 | `GET`  | `/latest` | latest value per DID |
 | `GET`  | `/series?did=&from=&to=` | time range (RFC3339) |
 
-Env: `DATABASE_URL` (default `postgres://ev:ev@localhost:5432/ev_tracker`),
+Env: `DATABASE_URL` (compose publishes TimescaleDB on host **:5433** →
+`postgres://ev:ev@localhost:5433/ev_tracker`; code default is `:5432`),
 `DEVICE_KEY` (default `dev`), `BIND` (default `0.0.0.0:3000`).
 
 ### Firmware (bench build only)
