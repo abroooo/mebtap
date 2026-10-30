@@ -71,9 +71,11 @@ async fn ingest(
     for s in &batch.samples {
         let (value_num, value_text) = split_value(&s.value);
         let ts = ms_to_dt(s.ts_ms);
-        sqlx::query(
+        // ON CONFLICT DO NOTHING: drop uplink-retry duplicates.
+        let res = sqlx::query(
             "INSERT INTO samples (device_id, did, ts, value_num, value_text, raw) \
-             VALUES ($1, $2, $3, $4, $5, $6)",
+             VALUES ($1, $2, $3, $4, $5, $6) \
+             ON CONFLICT (ts, device_id, did) DO NOTHING",
         )
         .bind(&batch.device_id)
         .bind(s.did as i64)
@@ -84,7 +86,7 @@ async fn ingest(
         .execute(&st.pool)
         .await
         .map_err(internal)?;
-        inserted += 1;
+        inserted += res.rows_affected();
     }
     Ok(Json(IngestResp { inserted }))
 }
