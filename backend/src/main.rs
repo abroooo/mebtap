@@ -31,6 +31,9 @@ async fn main() -> anyhow::Result<()> {
     let bind = env::var("BIND").unwrap_or_else(|_| "0.0.0.0:3000".to_string());
 
     let pool = PgPoolOptions::new().max_connections(5).connect(&db_url).await?;
+    // Apply any pending migrations on startup; sqlx tracks applied ones in
+    // _sqlx_migrations, so this runs each exactly once.
+    sqlx::migrate!("./migrations").run(&pool).await?;
 
     let state = AppState { pool, device_key };
     let app = Router::new()

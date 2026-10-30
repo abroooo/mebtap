@@ -71,10 +71,8 @@ cargo run -p ecu-sim
 
 # Full host stack, end to end: sim → backend → query.
 docker-compose up -d                                          # TimescaleDB, host :5433
-cat backend/migrations/*.sql | docker-compose exec -T timescaledb \
-  psql -U ev -d ev_tracker                                    # schema (no local psql)
 DATABASE_URL=postgres://ev:ev@localhost:5433/ev_tracker \
-  DEVICE_KEY=dev cargo run -p backend &                       # API on :3000
+  DEVICE_KEY=dev cargo run -p backend &                       # API on :3000 (runs migrations)
 cargo run -p ecu-sim -- --uplink http://localhost:3000 --device-key dev
 curl 'http://localhost:3000/latest'
 ```
