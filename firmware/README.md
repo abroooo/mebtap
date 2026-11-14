@@ -32,12 +32,18 @@ real flash.
 
 ## Status
 
-**Build-verified on bench only** — deliberately **outside the host workspace and
-CI** (needs ESP-IDF; the Xtensa toolchain would collide with the stable x86 build
-the CI runs). Sites that
-need an API signature double-check against the installed esp-idf-hal/svc version
-are marked `BENCH:` in the source. Runtime behaviour is validated once the board
-+ MrDIY CAN shield + transceiver are assembled (see `docs/mvp-spec.md` Phase 0).
+**On-car validated; bench-build only (by design, not in CI).** The firmware is
+deliberately kept **outside the host workspace and CI** — it needs ESP-IDF, and
+the Xtensa toolchain would collide with the stable x86 build CI runs — so it's
+build-verified on the bench rather than in GitHub Actions. Sites that need an API
+signature double-checked against the installed esp-idf-hal/svc version are marked
+`BENCH:` in the source.
+
+Hardware is assembled and running: the ESP32 + MrDIY CAN shield + transceiver poll
+the real Škoda Enyaq over 500 kbit/s CAN. Parked bring-up confirms live UDS — the
+core DIDs answer and GPS/time decode straight from the car (see `docs/mvp-spec.md`
+Phase 0). Parked-mode hardening (deep-sleep power management + SD-backed
+store-and-forward uplink) is in final cleanup.
 
 ## Safety
 
