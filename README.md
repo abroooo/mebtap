@@ -156,10 +156,23 @@ The firmware is **read-only by construction**:
 
 ## Roadmap
 
-1. Bench-build `firmware/`; resolve any `BENCH:`-marked esp-idf API sites.
-2. Stand up TimescaleDB + run the real sim → backend → `/latest` loop.
-3. Hardware arrives → Phase 0 SavvyCAN sniff, flash firmware, validate DIDs on
-   the real Enyaq, and feed measured update rates back into the lane assignments.
+**Done**
+
+- [x] Host pipeline: UDS/ISO-TP client, lane scheduler, discovery stats, serde schema — unit-tested end-to-end against the mock ECU (`ecu-sim`).
+- [x] Backend: axum ingest + TimescaleDB query API, idempotent ingest, migrations on startup.
+- [x] On-car bring-up: firmware flashed to the ESP32 + CAN shield; UDS polling validated against the live car (parked), DIDs confirmed, GPS/UTC decoded from the car.
+
+**In progress — `mvp` → `main` merge**
+
+- [ ] Land the full data-driven DID catalogue + `GpsPosition`/GPS-time decode (resolve the `DecodedValue` enum conflict in favour of the mvp impl).
+- [ ] Merge parked-mode firmware: store-and-forward uplink queue (SD-backed) and the deep-sleep power FSM so the logger lives on OBD power without draining the 12 V battery.
+- [ ] Feed measured on-car update rates back into the fast/slow lane assignments.
+
+**Next**
+
+- [ ] Moving (drive-time) validation: full-pass timing, multi-frame cell-voltage + GPS capture at speed.
+- [ ] SoH trend over repeated drives; dashboards on the stored series.
+- [ ] Grafana dashboards
 
 ## Credits & references
 
