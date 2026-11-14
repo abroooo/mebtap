@@ -22,13 +22,13 @@ Env: `DATABASE_URL` (compose publishes on host **:5433** →
 
 ## Endpoints
 
-| Method | Path | Notes |
-|---|---|---|
-| GET  | `/health` | liveness |
-| POST | `/ingest` | body = `meb_proto::SampleBatch` JSON; header `x-device-key` required |
-| GET  | `/dids` | distinct DIDs seen |
-| GET  | `/latest` | latest value per DID |
-| GET  | `/series?did=&from=&to=` | time range (RFC3339 timestamps) |
+| Method | Path                     | Notes                                                                |
+| ------ | ------------------------ | -------------------------------------------------------------------- |
+| GET    | `/health`                | liveness                                                             |
+| POST   | `/ingest`                | body = `meb_proto::SampleBatch` JSON; header `x-device-key` required |
+| GET    | `/dids`                  | distinct DIDs seen                                                   |
+| GET    | `/latest`                | latest value per DID                                                 |
+| GET    | `/series?did=&from=&to=` | time range (RFC3339 timestamps)                                      |
 
 ## End-to-end with the simulator
 
@@ -40,3 +40,17 @@ curl 'http://localhost:3000/latest'
 ```
 
 `cargo check` builds without a live DB (runtime `sqlx::query`, no compile-time macros).
+
+## Tests
+
+- **Unit tests** (`src/lib.rs`) cover pure helpers (`split_value`, payload serde)
+  and need no database.
+- **Endpoint tests** (`tests/endpoints.rs`) drive the axum router in-process via
+  `oneshot` (no network) against a **throwaway TimescaleDB** spun up with
+  testcontainers. Each test gets a fresh, isolated container that is torn down on
+  drop, with the real migrations applied.
+  - **Requires Docker** and the `timescale/timescaledb:latest-pg16` image
+    (pulled automatically on first run).
+  - Handler logic lives in the library (`backend::router`, `backend::AppState`)
+    so tests exercise the same code paths as `main`.
+  - Shared harness: `tests/common/mod.rs` (`TestDb`).
