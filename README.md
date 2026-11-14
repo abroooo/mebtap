@@ -1,5 +1,7 @@
 # EV Battery Tracker
 
+[![CI](https://github.com/abroooo/mebtap/actions/workflows/ci.yml/badge.svg)](https://github.com/abroooo/mebtap/actions/workflows/ci.yml)
+
 Telemetry logger for the **Škoda Enyaq** (VW **MEB** platform). An ESP32 on the
 car's OBD-II port polls the vehicle over CAN/UDS, buffers samples on flash, and
 forwards them to a Rust backend for storage and analysis — State of Charge, SoH
@@ -97,8 +99,9 @@ Env: `DATABASE_URL` (compose publishes TimescaleDB on host **:5433** →
 
 ### Firmware (bench build only)
 
-Needs the esp toolchain + ESP-IDF — **not built in CI**. See
-[`firmware/README.md`](firmware/README.md).
+Needs the esp toolchain + ESP-IDF, so it's **excluded from the host workspace and
+not built in CI** — the Xtensa toolchain is kept off the stable x86 path. Built on
+the bench; see [`firmware/README.md`](firmware/README.md).
 
 ```sh
 . "$HOME/export-esp.sh"

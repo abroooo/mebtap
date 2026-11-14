@@ -32,7 +32,9 @@ real flash.
 
 ## Status
 
-**Build-verified on bench only** — not compiled in CI (needs ESP-IDF). Sites that
+**Build-verified on bench only** — deliberately **outside the host workspace and
+CI** (needs ESP-IDF; the Xtensa toolchain would collide with the stable x86 build
+the CI runs). Sites that
 need an API signature double-check against the installed esp-idf-hal/svc version
 are marked `BENCH:` in the source. Runtime behaviour is validated once the board
 + MrDIY CAN shield + transceiver are assembled (see `docs/mvp-spec.md` Phase 0).
