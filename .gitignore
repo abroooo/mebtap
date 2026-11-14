@@ -3,3 +3,11 @@
 */.embuild
 /.feature-loop
 Cargo.lock
+
+# generated demo posters (scripts/demo-poster.sh default output); the committed
+# showcase images live under docs/img/
+/demo-poster.png
+/demo-*.png
+
+# local-only agent pointer
+/AGENTS.md
