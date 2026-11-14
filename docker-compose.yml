@@ -11,13 +11,19 @@ services:
       - "5433:5432"
     volumes:
       - ev-tsdb-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ev -d ev_tracker"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
 
   # web DB explorer: http://localhost:8085 (connects over the compose network)
   pgweb:
     image: sosedoff/pgweb
     container_name: ev-tracker-pgweb
     depends_on:
-      - timescaledb
+      timescaledb:
+        condition: service_healthy
     environment:
       PGWEB_DATABASE_URL: postgres://ev:ev@timescaledb:5432/ev_tracker?sslmode=disable
     ports:
