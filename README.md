@@ -14,8 +14,8 @@ the car.
 > push (GitHub Actions), including backend integration tests against a real
 > TimescaleDB (testcontainers). The same collector now runs on the ESP32 on the
 > car's OBD-II port: parked bring-up confirms live UDS polling (SoC, pack V/I,
-> temps, GPS-from-car) over the real 500 kbit/s bus. Firmware hardening is being
-> cleaned up for merge from mvp.
+> temps, GPS-from-car) over the real 500 kbit/s bus. Parked-mode firmware
+> hardening (power management + store-and-forward uplink) is in final cleanup.
 
 ---
 
@@ -166,10 +166,10 @@ The firmware is **read-only by construction**:
 - [x] Backend: axum ingest + TimescaleDB query API, idempotent ingest, migrations on startup.
 - [x] On-car bring-up: firmware flashed to the ESP32 + CAN shield; UDS polling validated against the live car (parked), DIDs confirmed, GPS/UTC decoded from the car.
 
-**In progress — `mvp` → `main` merge**
+**In progress**
 
-- [ ] Land the full data-driven DID catalogue + `GpsPosition`/GPS-time decode (resolve the `DecodedValue` enum conflict in favour of the mvp impl).
-- [ ] Merge parked-mode firmware: store-and-forward uplink queue (SD-backed) and the deep-sleep power FSM so the logger lives on OBD power without draining the 12 V battery.
+- [ ] Land the full data-driven DID catalogue + `GpsPosition`/GPS-time decode.
+- [ ] Finish parked-mode firmware: SD-backed store-and-forward uplink queue + deep-sleep power FSM, so the logger lives on OBD power without draining the 12 V battery.
 - [ ] Feed measured on-car update rates back into the fast/slow lane assignments.
 
 **Next**
