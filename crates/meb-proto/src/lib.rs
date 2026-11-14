@@ -203,6 +203,8 @@ pub enum DecodedValue {
     Int(i64),
     /// Enum string representation.
     Enum(String),
+    /// GPS position in decimal degrees (WGS84). Negative = south / west.
+    GpsPosition { lat: f64, lon: f64 },
     /// Raw bytes when scaling is unknown.
     Bytes(Vec<u8>),
 }

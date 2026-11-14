@@ -107,6 +107,18 @@ WIFI_SSID=... WIFI_PASS=... BACKEND_URL=http://<host>:3000 DEVICE_KEY=dev \
   cargo build --release
 ```
 
+## What you can do with the data
+
+One example — a drive telemetry poster: the GPS route coloured by **HV pack power
+(draw vs recuperation)**, state-of-charge, speed, operating mode, and the 12 V rail.
+
+![Drive telemetry poster — a full mountain stage, route coloured by power draw vs recuperation](docs/img/demo-poster-full-stage.png)
+
+![Drive telemetry poster — zoomed to the final climb's hairpins](docs/img/demo-poster-alpe-dhuez.png)
+
+Rendered from synthesized drive data (physics-based, same schema as the real
+feed) — generator + renderer in [`scripts/demo-poster.sh`](scripts/demo-poster.sh).
+
 ## How the car actually talks
 
 - **500 kbit/s CAN.** The OBD port is **gateway-firewalled** — powertrain frames

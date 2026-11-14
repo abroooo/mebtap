@@ -59,6 +59,7 @@ fn split_value(v: &DecodedValue) -> (Option<f64>, Option<String>) {
         DecodedValue::Float { val, .. } => (Some(*val), None),
         DecodedValue::Int(i) => (Some(*i as f64), None),
         DecodedValue::Enum(s) => (None, Some(s.clone())),
+        DecodedValue::GpsPosition { lat, lon } => (None, Some(format!("{lat:.6},{lon:.6}"))),
         DecodedValue::Bytes(_) => (None, None),
     }
 }

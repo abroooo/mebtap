@@ -3,6 +3,8 @@
 //! flow-controlled multi-frame reply for GPS — so the real `collector` code can
 //! be exercised end-to-end without any hardware.
 
+pub mod replay;
+
 use std::collections::{HashMap, HashSet};
 use std::sync::mpsc::{channel, Receiver, RecvTimeoutError, Sender};
 use std::thread::{self, JoinHandle};
