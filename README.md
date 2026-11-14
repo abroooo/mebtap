@@ -21,8 +21,8 @@ The ESP32 only supplies concrete implementations (TWAI, flash, WiFi). Everything
 that matters — the UDS/ISO-TP client, the lane scheduler, the discovery stats,
 the sample schema — is plain `std` Rust that compiles and runs on a pc. A
 host simulator (`ecu-sim`) runs the _exact_ collector code the ESP32 runs, against
-an in-memory mock MEB ECU. So we build and validate the real system before the
-transceiver is even in hand.
+an in-memory mock MEB ECU. So the real system could be built and validated
+before the real transceiver was even in hand.
 
 ```
       ┌──────────────┐        CAN / UDS 0x22         ┌──────────────┐
