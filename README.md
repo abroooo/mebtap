@@ -32,10 +32,10 @@ before the real transceiver was even in hand.
 
 ```
       ┌──────────────┐        CAN / UDS 0x22         ┌──────────────┐
-      │   Škoda      │  ◄───────────────────────────►│    ESP32     │
-      │   Enyaq      │     (listen-only until poll)  │  (thin glue) │
+      │   VW MEB     │  ◄───────────────────────────►│    ESP32     │
+      │   vehicle    │     (listen-only until poll)  │  (thin glue) │
       └──────────────┘                               └──────┬───────┘
-                                                             │ batch POST (TLS)
+                                                            │ batch POST
          swap in for the real car on the host               ▼
       ┌──────────────┐        same collector code     ┌──────────────┐
       │   ecu-sim    │  ◄───────────────────────────► │   backend    │
