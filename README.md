@@ -2,19 +2,19 @@
 
 [![CI](https://github.com/abroooo/mebtap/actions/workflows/ci.yml/badge.svg)](https://github.com/abroooo/mebtap/actions/workflows/ci.yml)
 
-Telemetry logger for the **Škoda Enyaq** (VW **MEB** platform). An ESP32 on the
-car's OBD-II port polls the vehicle over CAN/UDS, buffers samples on flash, and
-forwards them to a Rust backend for storage and analysis: State of Charge, SoH
-trend, pack voltage/current, cell voltages, temperatures, and GPS straight from
-the car.
+Telemetry logger for _**VW MEB platform**_ (for example VW ID.3/4/5/6, Skoda Enyaq).
+An ESP32 on the car's OBD-II port polls the vehicle over CAN/UDS, buffers samples
+on flash, and forwards them to a Rust backend for storage and analysis: State of
+Charge, SoH trend, pack voltage/current, cell voltages, temperatures, and GPS
+straight from the car.
 
 > Status: host stack complete and tested in CI. Firmware validated on the real car.
 > The full collect → decode → store → uplink pipeline is built as host-testable
 > std Rust - cargo clippy -D warnings + cargo test --workspace run on every
 > push (GitHub Actions), including backend integration tests against a real
 > TimescaleDB (testcontainers). The same collector now runs on the ESP32 on the
-> car's OBD-II port: parked bring-up confirms live UDS polling (SoC, pack V/I,
-> temps, GPS-from-car) over the real 500 kbit/s bus. Parked-mode firmware
+> car's (Skoda Enyaq) OBD-II port: parked bring-up confirms live UDS polling (SoC,
+> pack V/I, temps, GPS-from-car) over the real 500 kbit/s bus. Parked-mode firmware
 > hardening (power management + store-and-forward uplink) is in final cleanup.
 
 ---
